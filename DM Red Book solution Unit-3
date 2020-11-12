@@ -1,0 +1,81 @@
+-------Unit:3 Tasks
+
+--1.Create tables for Supplier, Stock and Product
+create table supplier(
+supplier_no number(2,0),
+supplier_name varchar2(10),
+discount number(2,0),
+constraint pk_supplier primary key (supplier_no)
+);
+
+--Fill data in table supplier()
+insert into supplier values( 23, 'STANLEY', 10 );
+insert into supplier values( 24, 'B+D', 15 );
+insert into supplier values( 25, 'FULMER', 5 );
+insert into supplier values( 28, 'WOLFE', 20 );
+
+Select * from supplier;
+
+create table stock_qty(
+supplier_no number(2,0),
+qty number(4,0),
+stock_no number(2,0),
+CONSTRAINT pk_stock primary key (supplier_no , stock_no),
+CONSTRAINT fk_supplier FOREIGN KEY (supplier_no) REFERENCES supplier(supplier_no)
+);
+
+--Fill data in table stock_qty()
+insert into stock_qty values( 23, 24, 52);
+insert into stock_qty values( 25, 60, 52);
+insert into stock_qty values( 28, 100, 52);
+insert into stock_qty values( 24, 2, 56);
+insert into stock_qty values( 23, 80, 58);
+insert into stock_qty values( 23, 26, 61);
+insert into stock_qty values( 25, 13, 61);
+insert into stock_qty values( 24, 3, 61);
+insert into stock_qty values( 28, 100, 61);
+insert into stock_qty values( 25, 11, 65);
+insert into stock_qty values( 23, 0, 65);
+insert into stock_qty values( 23, 7, 66);
+
+select * from stock_qty;
+
+create table product(
+supplier_no number(2,0) INVISIBLE,
+stock_no number(2,0),
+stock_desc varchar2(10),
+price   number(4,2),
+CONSTRAINT pk_prod primary key (stock_no , stock_desc),
+CONSTRAINT fk_prod FOREIGN key (supplier_no,stock_no) REFERENCES stock_qty(supplier_no , stock_no)
+);
+
+--Fill data in table Product()
+insert into product values( 52, 'HAMMER', 7.50);
+insert into product values( 56, 'DRIVER', 2.64);
+insert into product values( 58, 'NUT', 0.50);
+insert into product values( 61, 'BOLT', 0.40);
+insert into product values( 65, 'RULER', 0.63);
+insert into product values( 66, 'NAIL', 0.08);
+
+
+--drop table product;
+select * from Product;
+
+--2.a) List the supplier number, the supplier name, the stock_no of products supplied and the quantity (qty) supplied for the supplier named Fulmer.
+select a.supplier_no, supplier_name, stock_no, qty
+from supplier a, stock_qty b
+where a.supplier_no = b.supplier_no and
+a.supplier_name = 'FULMER';
+
+--2.b) For all products, list the Stock_desc, the price, the names of the suppliers and the quantities (Qty) in stock.
+Select stock_desc, price, supplier_name, qty
+from product p, supplier s, stock_qty q
+where p.stock_no = q.stock_no
+and q.supplier_no = s.supplier_no;
+
+--2.c) What products do STANLEY supply? You should display the supplier number and name, as well as the stock description.
+Select s.supplier_no, supplier_name, stock_desc
+from supplier s, stock_qty q, product p
+where s.supplier_no = q.supplier_no
+and q.stock_no = p.stock_no
+and s.supplier_name = 'STANLEY';
